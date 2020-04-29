@@ -9,7 +9,7 @@ customizable plugin. It's mainly built for my blog and just published because I 
 
 ## Installation
 
-1. `composer require knuspermagier/kirby-quick-add` or copy the files to the `site/plugins` folder.
+1. `composer require pwaldhauer/kirby-quick-add` or copy the files to the `site/plugins` folder.
 2. Add the section to a blueprint:
 
 ```

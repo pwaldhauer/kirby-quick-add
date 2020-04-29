@@ -1,6 +1,6 @@
 import QuickAdd from "./components/sections/QuickAdd.vue";
 
-panel.plugin("knuspermagier/quick-add", {
+panel.plugin("pwaldhauer/quick-add", {
     sections: {
         'quickadd': QuickAdd
     }
