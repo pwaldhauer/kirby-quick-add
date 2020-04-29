@@ -7,6 +7,9 @@ to the correct directory (e.g. `blog/posts/[current year]`).
 Please consider this plugin as a show case how to build a simple custom section and not as full fledged and extremely
 customizable plugin. It's mainly built for my blog and just published because I wanted to write a post about it 🤪
 
+![screenshot](screenshot.png)
+
+
 ## Installation
 
 1. `composer require pwaldhauer/kirby-quick-add` or copy the files to the `site/plugins` folder.
