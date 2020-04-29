@@ -1,0 +1,19 @@
+{
+  "name": "knuspermagier/kirby-quick-add",
+  "description": "Kirby Quick Add Panel Section",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Philipp Waldhauer",
+      "email": "hi@pwa.io"
+    }
+  ],
+  "require": {
+    "getkirby/composer-installer": "^1.1"
+  },
+  "extra": {
+    "installer-name": "quick-add"
+  },
+  "minimum-stability": "beta"
+}
