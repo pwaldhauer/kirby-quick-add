@@ -1,24 +1,22 @@
 <template>
     <div style="background-color: #dfdfdf; margin-bottom: 2rem; padding: 2rem;">
         <k-headline size="medium" style="margin-bottom: 2rem;">{{headline}}</k-headline>
+            <k-form
+                    :fields="fields"
+                    v-model="values"
+                    @submit="submit"
+            >
 
-        <k-form
-                :fields="fields"
-                v-model="values"
-                @submit="submit"
-        >
+                <footer slot="footer" style="margin-top: 2rem;">
+                    <k-button
+                            icon="check"
+                            type="submit"
+                            theme="positive">
+                        Create
+                    </k-button>
+                </footer>
 
-            <footer slot="footer" style="margin-top: 2rem;">
-                <k-button
-                        icon="check"
-                        type="submit"
-                        theme="positive">
-                    Create
-                </k-button>
-            </footer>
-
-        </k-form>
-
+            </k-form>
     </div>
 
 </template>
@@ -68,31 +66,32 @@
         },
 
         created() {
-            this.load().then(response => {
-                this.headline = response.headline;
-                this.target = response.target;
-                this.templates = response.templates;
-                this.values.template = response.defaultTemplate;
+            this.load()
+                .then(response => {
+                    this.headline = response.headline;
+                    this.target = response.target;
+                    this.templates = response.templates;
+                    this.values.template = response.defaultTemplate;
 
-                this.fields = {
-                    title: {
-                        label: "Title",
-                        type: "text",
-                        width: "1/2"
-                    },
-                    template: {
-                        label: "Template",
-                        type: "select",
-                        width: "1/2",
-                        options: this.templateOptions
-                    },
-                    text: {
-                        label: "Text",
-                        type: "textarea",
-                        buttons: false
+                    this.fields = {
+                        title: {
+                            label: "Title",
+                            type: "text",
+                            width: "1/2"
+                        },
+                        template: {
+                            label: "Template",
+                            type: "select",
+                            width: "1/2",
+                            options: this.templateOptions
+                        },
+                        text: {
+                            label: "Text",
+                            type: "textarea",
+                            buttons: false
+                        }
                     }
-                }
-            });
+                });
         }
     };
 </script>
