@@ -8,12 +8,22 @@
             >
 
                 <footer slot="footer" style="margin-top: 2rem;">
-                    <k-button
-                            icon="check"
-                            type="submit"
-                            theme="positive">
-                        Create
-                    </k-button>
+                    <div style="display: flex; justify-content: space-between">
+                        <k-button
+                                icon="add"
+                                type="submit"
+                                theme="positive"
+                                @click.prevent="publish"
+                        >
+                            Publish
+                        </k-button>
+                        <k-button
+                                icon="check"
+                                type="submit"
+                                theme="positive">
+                            Create
+                        </k-button>
+                    </div>
                 </footer>
 
             </k-form>
@@ -24,7 +34,18 @@
 <script>
     export default {
         methods: {
+
+            publish() {
+                console.log('pub');
+                this._createPage(true);
+            },
+
             submit() {
+                this._createPage();
+
+            },
+
+            _createPage(publish = false) {
                 const target = this.target.replace('[YEAR]', this.$library.dayjs().format("YYYY"));
 
                 this.$api.pages.create(target, {
@@ -36,11 +57,21 @@
                         text: this.values.text
                     }
                 }).then(data => {
+                    if(publish) {
+                        this.$api.pages.status(data.id, 'listed').then( _ => {
+                            this.$router.push({name: 'Page', params: {path: data.id.replace(/\//g, '+')}});
+                        });
+
+                        return;
+                    }
+
                     this.$router.push({name: 'Page', params: {path: data.id.replace(/\//g, '+')}});
                 })
-            },
+            }
 
         },
+
+
 
         data() {
             return {
