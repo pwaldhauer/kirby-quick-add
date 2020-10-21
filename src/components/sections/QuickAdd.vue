@@ -36,7 +36,6 @@
         methods: {
 
             publish() {
-                console.log('pub');
                 this._createPage(true);
             },
 
