@@ -1,14 +1,37 @@
 <template>
-    <div style="background-color: #dfdfdf; margin-bottom: 2rem; padding: 2rem;">
+    <div class="panel">
         <k-dropzone @drop="drop">
-            <k-headline size="medium" style="margin-bottom: 2rem;">{{headline}}</k-headline>
+            <k-headline size="medium" class="headline">{{headline}}</k-headline>
 
-            <p style="padding-top: 2rem; padding-bottom: 2rem;">{{text}}</p>
+            <p class="inner">{{text}}</p>
             <k-upload ref="uploader" @success="onUploadSuccess"/>
         </k-dropzone>
     </div>
 
 </template>
+
+<style>
+
+
+.headline {
+
+  background: var(--color-gray-300);
+  padding: 10px 20px;
+}
+
+.inner {
+  background: var(--color-background);
+  padding: 10px 20px;
+}
+
+.panel {
+  background: var(--color-white);
+  border-radius: var(--rounded);
+  box-shadow: var(--shadow);
+  padding-bottom: 0;
+}
+
+</style>
 
 <script>
     export default {

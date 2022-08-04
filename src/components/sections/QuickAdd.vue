@@ -1,35 +1,66 @@
 <template>
-    <div style="background-color: #dfdfdf; margin-bottom: 2rem; padding: 2rem;">
-        <k-headline size="medium" style="margin-bottom: 2rem;">{{headline}}</k-headline>
-            <k-form
-                    :fields="fields"
-                    v-model="values"
-                    @submit="submit"
-            >
+    <div class="panel">
+        <k-headline size="medium" class="headline">{{headline}}</k-headline>
 
-                <footer slot="footer" style="margin-top: 2rem;">
-                    <div style="display: flex; justify-content: space-between">
-                        <k-button
-                                icon="add"
-                                type="submit"
-                                theme="positive"
-                                @click.prevent="publish"
-                        >
-                            Publish
-                        </k-button>
-                        <k-button
-                                icon="check"
-                                type="submit"
-                                theme="positive">
-                            Create
-                        </k-button>
-                    </div>
-                </footer>
+        <div class="form">
+          <k-form
+              :fields="fields"
+              v-model="values"
+              @submit="submit"
+          >
 
-            </k-form>
+            <footer slot="footer" class="form-footer">
+              <div style="display: flex; justify-content: space-between">
+                <k-button
+                    icon="add"
+                    type="submit"
+                    theme="positive"
+                    @click.prevent="publish"
+                >
+                  Publish
+                </k-button>
+                <k-button
+                    icon="check"
+                    type="submit"
+                    theme="positive">
+                  Create
+                </k-button>
+              </div>
+            </footer>
+
+          </k-form>
+        </div>
+
     </div>
 
 </template>
+
+<style>
+
+.form-footer {
+
+  padding: 20px 20px;
+
+  background: var(--color-background);
+}
+
+.form .k-fieldset {
+  background: var(--color-background);
+  padding: 20px 20px;
+}
+.headline {
+
+  background: var(--color-gray-300);
+  padding: 10px 20px;
+}
+.panel {
+  background: var(--color-white);
+  border-radius: var(--rounded);
+  box-shadow: var(--shadow);
+  padding-bottom: 0;
+}
+
+</style>
 
 <script>
     export default {
