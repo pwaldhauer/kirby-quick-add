@@ -45,7 +45,7 @@
                     this.$api.pages.update(this.postPath.replace(/\//g, '+'), {
                         text: texts.join("\n")
                     }).then(() => {
-                        this.$router.push({name: 'Page', params: {path: this.postPath.replace(/\//g, '+')}});
+                      this.$go(`pages/${this.postPath.replace(/\//g, '+')}`);
                     })
                 })
             },
@@ -56,7 +56,7 @@
                 this.createShallowPost(firstFile.name).then(data => {
                     this.postPath = data.id;
                     this.$refs.uploader.drop(files, {
-                        url: window.panel.api + '/' + this.$api.pages.url(this.postPath, "files"),
+                        url: this.$urls.api + '/' + this.$api.pages.url(this.postPath, "files"),
                         multiple: true,
                     })
                 })

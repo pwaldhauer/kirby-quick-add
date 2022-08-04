@@ -88,14 +88,14 @@
                     }
                 }).then(data => {
                     if(publish) {
-                        this.$api.pages.status(data.id, 'listed').then( _ => {
-                            this.$router.push({name: 'Page', params: {path: data.id.replace(/\//g, '+')}});
+                        this.$api.pages.changeStatus(data.id, 'listed').then( _ => {
+                            this.$go(`pages/${data.id.replace(/\//g, '+')}`);
                         });
 
                         return;
                     }
 
-                    this.$router.push({name: 'Page', params: {path: data.id.replace(/\//g, '+')}});
+                    this.$go(`pages/${data.id.replace(/\//g, '+')}`);
                 })
             }
 
