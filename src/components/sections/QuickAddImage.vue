@@ -1,106 +1,101 @@
 <template>
-    <div class="panel">
-        <k-dropzone @drop="drop">
-            <k-headline size="medium" class="headline">{{headline}}</k-headline>
-
-            <p class="inner">{{text}}</p>
-            <k-upload ref="uploader" @success="onUploadSuccess"/>
-        </k-dropzone>
-    </div>
-
+	<k-section :headline="headline" class="k-quick-add-image-section">
+		<k-dropzone :disabled="isLoading" @drop="drop">
+			<k-empty icon="upload" layout="cards">
+				{{ text }}
+			</k-empty>
+		</k-dropzone>
+	</k-section>
 </template>
 
-<style>
-
-
-.headline {
-
-  background: var(--color-gray-300);
-  padding: 10px 20px;
-}
-
-.inner {
-  background: var(--color-background);
-  padding: 10px 20px;
-}
-
-.panel {
-  background: var(--color-white);
-  border-radius: var(--rounded);
-  box-shadow: var(--shadow);
-  padding-bottom: 0;
-}
-
-</style>
-
 <script>
-    export default {
-        methods: {
-            onUploadSuccess() {
-                this.$api.pages.files(this.postPath.replace(/\//g, '+')).then(({data}) => {
-                    const texts = data.map(({filename}) => {
-                        return this.dragText.replace('[FILENAME]', filename);
-                    });
+export default {
+	data() {
+		return {
+			headline: "",
+			text: "",
+			dragText: "",
+			target: "",
+			template: "",
+			isLoading: false
+		};
+	},
 
-                    this.$api.pages.update(this.postPath.replace(/\//g, '+'), {
-                        text: texts.join("\n")
-                    }).then(() => {
-                      this.$go(`pages/${this.postPath.replace(/\//g, '+')}`);
-                    })
-                })
-            },
+	async created() {
+		const response = await this.load();
 
-            drop(files) {
-                const firstFile = files[0];
+		this.headline = response.headline;
+		this.text = response.text;
+		this.dragText = response.dragText;
+		this.target = response.target;
+		this.template = response.template;
+	},
 
-                this.createShallowPost(firstFile.name).then(data => {
-                    this.postPath = data.id;
-                    this.$refs.uploader.drop(files, {
-                        url: this.$urls.api + '/' + this.$api.pages.url(this.postPath, "files"),
-                        multiple: true,
-                    })
-                })
-            },
+	methods: {
+		async drop(files) {
+			this.isLoading = true;
 
+			try {
+				const page = await this.createShallowPost(files[0].name);
+				this.upload(page, files);
+			} catch (error) {
+				this.$panel.error(error);
+				this.isLoading = false;
+			}
+		},
 
-            createShallowPost(title) {
-                const target = this.target.replace('[YEAR]', this.$library.dayjs().format("YYYY"));
+		upload(page, files) {
+			const upload = this.$panel.upload;
 
-                return this.$api.pages.create(target, {
-                    slug: this.$helper.slug(title),
-                    title: title,
-                    template: this.template,
-                    content: {
-                        title: title,
-                        text: ''
-                    }
-                })
-            },
+			upload.open(files, {
+				url:
+					this.$panel.urls.api +
+					"/" +
+					this.$panel.api.pages.url(page.id, "files"),
+				multiple: true,
+				on: {
+					done: (uploaded) => this.onUploadDone(page, uploaded),
+					cancel: () => (this.isLoading = false)
+				}
+			});
 
-        },
+			// start uploading right away instead of waiting
+			// for the user to confirm the upload dialog
+			this.$panel.dialog.isLoading = true;
+			upload.submit().finally(() => (this.$panel.dialog.isLoading = false));
+		},
 
-        data() {
-            return {
-                postPath: null,
-                headline: '',
-                text: '',
-                dragText: '',
-                target: '',
-                template: '',
+		async onUploadDone(page, uploaded) {
+			try {
+				const text = uploaded
+					.map(({ filename }) => this.dragText.replace("[FILENAME]", filename))
+					.join("\n");
 
-                fields: {}
-            }
-        },
+				await this.$panel.api.pages.update(page.id, { text });
 
-        created() {
-            this.load()
-                .then(response => {
-                    this.headline = response.headline;
-                    this.text = response.text;
-                    this.dragText = response.dragText;
-                    this.target = response.target;
-                    this.template = response.template;
-                });
-        }
-    };
+				this.$panel.view.open(this.$panel.api.pages.link(page.id));
+			} catch (error) {
+				this.$panel.error(error);
+			} finally {
+				this.isLoading = false;
+			}
+		},
+
+		createShallowPost(title) {
+			const target = this.target.replace(
+				"[YEAR]",
+				new Date().getFullYear()
+			);
+
+			return this.$panel.api.pages.create(target, {
+				slug: this.$helper.slug(title),
+				template: this.template,
+				content: {
+					title: title,
+					text: ""
+				}
+			});
+		}
+	}
+};
 </script>

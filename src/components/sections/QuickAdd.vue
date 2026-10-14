@@ -1,158 +1,142 @@
 <template>
-    <div class="panel">
-        <k-headline size="medium" class="headline">{{headline}}</k-headline>
-
-        <div class="form">
-          <k-form
-              :fields="fields"
-              v-model="values"
-              @submit="submit"
-          >
-
-            <footer slot="footer" class="form-footer">
-              <div style="display: flex; justify-content: space-between">
-                <k-button
-                    icon="add"
-                    type="submit"
-                    theme="positive"
-                    @click.prevent="publish"
-                >
-                  Publish
-                </k-button>
-                <k-button
-                    icon="check"
-                    type="submit"
-                    theme="positive">
-                  Create
-                </k-button>
-              </div>
-            </footer>
-
-          </k-form>
-        </div>
-
-    </div>
-
+	<k-section :headline="headline" class="k-quick-add-section">
+		<div class="k-quick-add-box">
+			<k-form
+				:fields="fields"
+				:value="values"
+				@input="values = $event"
+				@submit="submit"
+			>
+				<template #footer>
+					<footer class="k-quick-add-footer">
+						<k-button
+							icon="check"
+							type="submit"
+							variant="filled"
+							size="sm"
+							:disabled="isLoading"
+						>
+							Create
+						</k-button>
+						<k-button
+							icon="add"
+							variant="filled"
+							theme="positive"
+							size="sm"
+							:disabled="isLoading"
+							@click="publish"
+						>
+							Publish
+						</k-button>
+					</footer>
+				</template>
+			</k-form>
+		</div>
+	</k-section>
 </template>
 
-<style>
-
-.form-footer {
-
-  padding: 20px 20px;
-
-  background: var(--color-background);
-}
-
-.form .k-fieldset {
-  background: var(--color-background);
-  padding: 20px 20px;
-}
-.headline {
-
-  background: var(--color-gray-300);
-  padding: 10px 20px;
-}
-.panel {
-  background: var(--color-white);
-  border-radius: var(--rounded);
-  box-shadow: var(--shadow);
-  padding-bottom: 0;
-}
-
-</style>
-
 <script>
-    export default {
-        methods: {
+export default {
+	data() {
+		return {
+			headline: "",
+			target: "",
+			templates: [],
+			isLoading: false,
+			values: {
+				title: "",
+				template: "",
+				text: ""
+			}
+		};
+	},
 
-            publish() {
-                this._createPage(true);
-            },
+	computed: {
+		fields() {
+			return {
+				title: {
+					label: "Title",
+					type: "text",
+					width: "1/2"
+				},
+				template: {
+					label: "Template",
+					type: "select",
+					width: "1/2",
+					empty: false,
+					options: this.templates.map((t) => ({ value: t, text: t }))
+				},
+				text: {
+					label: "Text",
+					type: "textarea",
+					buttons: false
+				}
+			};
+		}
+	},
 
-            submit() {
-                this._createPage();
+	async created() {
+		const response = await this.load();
 
-            },
+		this.headline = response.headline;
+		this.target = response.target;
+		this.templates = response.templates;
+		this.values.template = response.defaultTemplate;
+	},
 
-            _createPage(publish = false) {
-                const target = this.target.replace('[YEAR]', this.$library.dayjs().format("YYYY"));
+	methods: {
+		publish() {
+			this.createPage(true);
+		},
 
-                this.$api.pages.create(target, {
-                    slug: this.$helper.slug(this.values.title),
-                    title: this.values.title,
-                    template: this.values.template,
-                    content: {
-                        title: this.values.title,
-                        text: this.values.text
-                    }
-                }).then(data => {
-                    if(publish) {
-                        this.$api.pages.changeStatus(data.id, 'listed').then( _ => {
-                            this.$go(`pages/${data.id.replace(/\//g, '+')}`);
-                        });
+		submit() {
+			this.createPage();
+		},
 
-                        return;
-                    }
+		async createPage(publish = false) {
+			const target = this.target.replace(
+				"[YEAR]",
+				new Date().getFullYear()
+			);
 
-                    this.$go(`pages/${data.id.replace(/\//g, '+')}`);
-                })
-            }
+			this.isLoading = true;
 
-        },
+			try {
+				const page = await this.$panel.api.pages.create(target, {
+					slug: this.$helper.slug(this.values.title),
+					template: this.values.template,
+					content: {
+						title: this.values.title,
+						text: this.values.text
+					}
+				});
 
+				if (publish) {
+					await this.$panel.api.pages.changeStatus(page.id, "listed");
+				}
 
-
-        data() {
-            return {
-                headline: '',
-                target: '',
-                templates: [],
-
-                values: {
-                    title: '',
-                    template: '',
-                    text: '',
-                },
-                fields: {}
-            }
-        },
-
-        computed: {
-            templateOptions() {
-                return this.templates.map(t => {
-                    return {value: t, text: t}
-                })
-            }
-        },
-
-        created() {
-            this.load()
-                .then(response => {
-                    this.headline = response.headline;
-                    this.target = response.target;
-                    this.templates = response.templates;
-                    this.values.template = response.defaultTemplate;
-
-                    this.fields = {
-                        title: {
-                            label: "Title",
-                            type: "text",
-                            width: "1/2"
-                        },
-                        template: {
-                            label: "Template",
-                            type: "select",
-                            width: "1/2",
-                            options: this.templateOptions
-                        },
-                        text: {
-                            label: "Text",
-                            type: "textarea",
-                            buttons: false
-                        }
-                    }
-                });
-        }
-    };
+				this.$panel.view.open(this.$panel.api.pages.link(page.id));
+			} catch (error) {
+				this.$panel.error(error);
+			} finally {
+				this.isLoading = false;
+			}
+		}
+	}
+};
 </script>
+
+<style>
+.k-quick-add-box {
+	background: light-dark(var(--color-white), var(--color-gray-850));
+	border-radius: var(--rounded);
+	box-shadow: var(--shadow);
+	padding: var(--spacing-6);
+}
+
+.k-quick-add-footer {
+	display: flex;
+	justify-content: space-between;
+	margin-top: var(--spacing-6);
+}
+</style>

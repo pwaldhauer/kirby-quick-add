@@ -10,6 +10,10 @@ customizable plugin. It's mainly built for my blog and just published because I 
 ![screenshot](screenshot.png)
 
 
+## Requirements
+
+Kirby 5.
+
 ## Installation
 
 1. `composer require pwaldhauer/kirby-quick-add` or copy the files to the `site/plugins` folder.
@@ -58,6 +62,16 @@ sections:
 - `target`: The path to the page the new one will be a child of. `[YEAR]` will be replaced with the current year (e.g. 2020).
 - `template`: Default template for the created post
 
+
+## Development
+
+The Panel code is built with [kirbyup](https://kirbyup.getkirby.com/) (requires Node.js 22+).
+
+```
+npm install
+npm run dev    # watch mode with hot module reloading
+npm run build  # production build to index.js / index.css
+```
 
 ## License
 

@@ -1,18 +1,15 @@
 {
+  "name": "kirby-quick-add",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "parcel watch src/index.js --no-source-maps -d ./",
-    "build": "parcel build src/index.js --no-source-maps --experimental-scope-hoisting -d ./"
-  },
-  "posthtml": {
-    "recognizeSelfClosing": true
+    "dev": "kirbyup serve src/index.js",
+    "build": "kirbyup src/index.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@vue/component-compiler-utils": "^3.1.2",
-    "vue-template-compiler": "^2.6.11"
+    "kirbyup": "^3.5.0"
   },
-  "dependencies": {
-    "vue": "^2.6.11",
-    "vue-hot-reload-api": "^2.3.4"
+  "engines": {
+    "node": ">=22"
   }
 }
